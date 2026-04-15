@@ -58,6 +58,7 @@ public class SecurityConfiguration {
        UserDetails guest = User.builder()
             .username("guest")
             .password("{bcrypt}$2a$10$4hUwZuewbgxjSAuCN2FCYOrBfhIi10lqZBYzE77aOHZbk3P12ZErK")
+            .roles("GUEST")
             .build();
 
         return new InMemoryUserDetailsManager(administrator, guest);
