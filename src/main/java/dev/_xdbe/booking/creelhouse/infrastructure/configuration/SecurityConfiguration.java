@@ -27,12 +27,12 @@ public class SecurityConfiguration {
         return http
             .authorizeHttpRequests(auth -> auth
                 // Step 4a: add access control
-                // ...
+                .requestMatchers("/dashboard").hasRole("ADMIN")
                 // Step 4a: end
                 .anyRequest().permitAll()
             )
             // Step 4b: Add login form
-            // ...
+            .formLogin(withDefaults())
             // Step 4b: End of login form configuration
             
             .csrf((csrf) -> csrf
@@ -46,8 +46,20 @@ public class SecurityConfiguration {
             .build();
     }
 
-    // Step 3: add InMemoryUserDetailsManager
-    // ...
-    // Step 3: end
+    @Bean
+    public UserDetailsService userDetailsService() {
 
+        UserDetails administrator = User.builder()
+            .username("admin")
+            .password("{bcrypt}$2a$10$4hUwZuewbgxjSAuCN2FCYOrBfhIi10lqZBYzE77aOHZbk3P12ZErK")
+            .roles("ADMIN")
+            .build();
+
+       UserDetails guest = User.builder()
+            .username("guest")
+            .password("{bcrypt}$2a$10$4hUwZuewbgxjSAuCN2FCYOrBfhIi10lqZBYzE77aOHZbk3P12ZErK")
+            .build();
+
+        return new InMemoryUserDetailsManager(administrator, guest);
+    }
 }
