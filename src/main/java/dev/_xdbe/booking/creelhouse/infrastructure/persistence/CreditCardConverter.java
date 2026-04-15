@@ -36,11 +36,16 @@ public class CreditCardConverter implements AttributeConverter<String, String> {
         return maskedPanString;
     }
 
-    private String panMasking(String pan) {
-        // Step 6:
-        return pan;
-        // Step 6: End
+    private String panMasking(String ccNumber) {
+        if (ccNumber == null || ccNumber.length() <= 8) {
+            return ccNumber;
+        }
+        
+        int length = ccNumber.length();
+        String firstFour = ccNumber.substring(0, 4);
+        String lastFour = ccNumber.substring(length - 4);
+        String stars = "*".repeat(length - 8);
+        
+        return firstFour + stars + lastFour;
     }
-
-    
 }
