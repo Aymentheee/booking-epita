@@ -15,6 +15,11 @@ jobs:
           
       - name: Run OSV Scanner after PR
         uses: google/osv-scanner-action/osv-scanner-action@main
+        with:
+          scan-args: |-
+            --format=json
+            --output=new.json
+            ./
         continue-on-error: true
         
       - name: checkout baseline commit
@@ -22,16 +27,26 @@ jobs:
         
       - name: Run OSV Scanner before PR
         uses: google/osv-scanner-action/osv-scanner-action@main
+        with:
+          scan-args: |-
+            --format=json
+            --output=old.json
+            ./
         continue-on-error: true
         
       - name: Compare analysis
         uses: google/osv-scanner-action/osv-reporter-action@main
+        with:
+          scan-args: |-
+            --old=old.json
+            --new=new.json
+            --output-files=sarif:DependenciesDiff.sarif
         
       - name: Save differential report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: osv-diff-report
-          path: ./*.sarif
+          path: DependenciesDiff.sarif
 
   SourceCodeAnalysis:
     runs-on: ubuntu-latest
