@@ -1,48 +1,49 @@
 name: security
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 permissions:
+  # Required to upload SARIF file to CodeQL.
   actions: read
+  # Require writing security events to upload SARIF file
   security-events: write
+  # to fetch code (actions/checkout)
   contents: read
 
 jobs:
-  dependencies-analysis:
-    name: Job 1: Dependencies Analysis
+  DependenciesAnalysis:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+        
       - name: run osv-scanner
-        uses: google/osv-scanner-action/osv-scanner-action@v1
+        uses: google/osv-scanner-action/osv-scanner-action@main
         with:
           scan-args: |-
             --format sarif
-            --output DependenciesAnalysis Full.sarif
+            --output DependenciesAnalysisFull.sarif
             ./
         continue-on-error: true
-
-      - name: Send report to security dashboard
+        
+      - name: Upload OSV report to Security Dashboard
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: DependenciesAnalysis Full.sarif
+          sarif_file: DependenciesAnalysisFull.sarif
 
-  source-code-analysis:
-    name: Job 2: SourceCodeAnalysis
+  SourceCodeAnalysis:
     runs-on: ubuntu-latest
     container:
-      image: returntocorp/semgrep
+      image: returntocorp/semgrep:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: run analysis with semgrep
-        run: semgrep scan --config .semgrep --sarif --output report.sarif
-
-      - name: Send report to security dashboard
+        
+      - name: Run analysis with semgrep
+        run: semgrep scan --config .semgrep --sarif --output SourceCodeAnalysis.sarif
+        continue-on-error: true
+        
+      - name: Upload Semgrep report to Security Dashboard
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
         with:
-          sarif_file: report.sarif
+          sarif_file: SourceCodeAnalysis.sarif
