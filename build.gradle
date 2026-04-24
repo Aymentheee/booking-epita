@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.session:spring-session-core'
 	implementation 'com.h2database:h2:2.4.240'
 	implementation("org.springframework.boot:spring-boot-h2console:4.0.5")
+	implementation("xerces:xercesImpl:2.3.0")
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
