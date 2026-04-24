@@ -1,0 +1,48 @@
+[cite_start]name: security [cite: 93]
+on:
+  [cite_start]workflow_dispatch [cite: 95]
+
+permissions:
+  [cite_start]actions: read [cite: 97]
+  [cite_start]security-events: write [cite: 98]
+  [cite_start]contents: read [cite: 99]
+
+jobs:
+  dependencies-analysis:
+    [cite_start]name: Job 1: Dependencies Analysis [cite: 101]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - [cite_start]name: run osv-scanner [cite: 104]
+        [cite_start]uses: google/osv-scanner-action/osv-scanner-action@v1
+        with:
+          [cite_start]scan-args: |- [cite: 106]
+            [cite_start]--format sarif [cite: 107]
+            [cite_start]--output DependenciesAnalysis Full.sarif [cite: 108]
+            [cite_start]./ [cite: 109]
+        [cite_start]continue-on-error: true [cite: 110]
+
+      - [cite_start]name: Send report to security dashboard [cite: 112]
+        [cite_start]uses: github/codeql-action/upload-sarif@v3 [cite: 113]
+        with:
+          sarif_file: DependenciesAnalysis Full.sarif
+
+  source-code-analysis:
+    [cite_start]name: Job 2: SourceCodeAnalysis [cite: 116]
+    [cite_start]runs-on: ubuntu-latest [cite: 119]
+    container:
+      [cite_start]image: returntocorp/semgrep [cite: 120]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - [cite_start]name: run analysis with semgrep [cite: 121]
+        [cite_start]run: semgrep scan --config .semgrep --sarif --output report.sarif [cite: 124]
+
+      - [cite_start]name: Send report to security dashboard [cite: 125]
+        [cite_start]uses: github/codeql-action/upload-sarif@v3 [cite: 127]
+        if: always()
+        with:
+          sarif_file: report.sarif
