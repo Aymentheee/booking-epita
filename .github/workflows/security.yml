@@ -7,7 +7,7 @@ permissions:
   actions: read
   # Require writing security events to upload SARIF file
   security-events: write
-  # to fetch code (actions/checkout)
+  # to fetch code (actions/ checkout)
   contents: read
 
 jobs:
